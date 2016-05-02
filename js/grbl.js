@@ -27,7 +27,7 @@ Grbl.prototype = function () {
 		var messageArray = rawMessageArray
 		var messageError = false;
 
-		messageError = messageArray[0] === "Alarm" || messageArray[0] === "Idle" || messageArray[0] === "Run"? false:true;
+		messageError = messageArray[0] === "Alarm" || messageArray[0] === "Idle" || messageArray[0] === "Run" || messageArray[0] === "Queue"? false:true;
 	    messageError = messageArray[1] === "MPos" && !messageError? false:true;
 	    messageError = messageArray[5] === "WPos" && !messageError? false:true;
 	    messageError = messageArray[9] === "S" && !messageError? false:true;
