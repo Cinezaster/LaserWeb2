@@ -1,7 +1,19 @@
 // Written by Sebastien Mischler https://github.com/lautr3k/SLAcer.js/tree/master/js/slacer
-var shapes =  null;;
-var group =  null;;
+var shapes = null;;
+var group = null;;
 var slicegroup;
+
+function hidestl() {
+    $('#hidestl').addClass('disabled');
+    $('#showstl').removeClass('disabled');
+    scene.remove(stl);
+}
+
+function showstl() {
+    $('#showstl').addClass('disabled');
+    $('#hidestl').removeClass('disabled');
+    scene.add(stl);
+}
 
 
 //start stl parsing functions
@@ -78,109 +90,98 @@ var group;
 
 var fileObject = new THREE.Group();
 
-function hidestl() {
-  $('#hidestl').addClass('disabled');
-  $('#showstl').removeClass('disabled');
-  scene.remove(stl);
-}
-
-function showstl() {
-  $('#showstl').addClass('disabled');
-  $('#hidestl').removeClass('disabled');
-  scene.add(stl);
-}
 
 function generateSlices() {
-  var layerheight = parseFloat($('#layerheight').val());
-  slicegrid(layerheight);
+    var layerheight = parseFloat($('#layerheight').val());
+    slicegrid(layerheight);
 }
 
 function slicegrid(step) {
-  var numx = Math.floor(laserxmax / stlxsize);
-  var numy = Math.floor(laserymax / stlysize);
-  var numlayers =Math.floor(stlzsize / parseFloat($('#layerheight').val()))
-  console.log('Will be able to fit ', numx, ' on X, and ', numy,  'on Y. ', 'We will need space for ', numlayers)
+    var numx = Math.floor(laserxmax / stlxsize);
+    var numy = Math.floor(laserymax / stlysize);
+    var numlayers = Math.floor(stlzsize / parseFloat($('#layerheight').val()))
+    console.log('Will be able to fit ', numx, ' on X, and ', numy, 'on Y. ', 'We will need space for ', numlayers)
 
-  // var rectShape = new THREE.Shape();
-  // rectShape.moveTo( 0,0 );
-  // rectShape.lineTo( 0, stlysize );
-  // rectShape.lineTo( stlxsize, stlysize );
-  // rectShape.lineTo( stlxsize, 0 );
-  // rectShape.lineTo( 0, 0 );
-  // rectShape.autoClose = true;
-  //
-  // var rectGeom = new THREE.ShapeGeometry( rectShape );
+    // var rectShape = new THREE.Shape();
+    // rectShape.moveTo( 0,0 );
+    // rectShape.lineTo( 0, stlysize );
+    // rectShape.lineTo( stlxsize, stlysize );
+    // rectShape.lineTo( stlxsize, 0 );
+    // rectShape.lineTo( 0, 0 );
+    // rectShape.autoClose = true;
+    //
+    // var rectGeom = new THREE.ShapeGeometry( rectShape );
 
-  slicegroup  = new THREE.Group();
-  var i = 0;
-  for (col = 0; col < numy; col++) {
-    for (row = 0; row < numx; row++) {
-      // var rectMesh = new THREE.Line( rectGeom, new THREE.LineBasicMaterial( { color: 0xcccccc, opacity: 0.6 } ) ) ;
-      // rectMesh.position.x = ((- laserxmax / 2) + (stlxsize * row) );
-      // rectMesh.position.y = ((- laserymax / 2) + (stlysize * col) ) ;
-      // scene.add( rectMesh );
-      group  = new THREE.Group();
-      //for(var i = 0; i < stlzsize; i+= step) {
-       (function(i) {
-         drawSlice(i);
-       })(i);
-       i++
-      //}
-      group.translateX(stlxsize * row);
-      group.translateY(stlysize * col);
-      slicegroup.add(group);
+    slicegroup = new THREE.Group();
+    var i = 0;
+    for (col = 0; col < numy; col++) {
+        for (row = 0; row < numx; row++) {
+            // var rectMesh = new THREE.Line( rectGeom, new THREE.LineBasicMaterial( { color: 0xcccccc, opacity: 0.6 } ) ) ;
+            // rectMesh.position.x = ((- laserxmax / 2) + (stlxsize * row) );
+            // rectMesh.position.y = ((- laserymax / 2) + (stlysize * col) ) ;
+            // scene.add( rectMesh );
+            group = new THREE.Group();
+            //for(var i = 0; i < stlzsize; i+= step) {
+            (function(i) {
+                drawSlice(i);
+            })(i);
+            i++
+            //}
+            group.translateX(stlxsize * row);
+            group.translateY(stlysize * col);
+            slicegroup.add(group);
+        }
     }
-  }
 
-  var bbox = new THREE.BoundingBoxHelper(slicegroup, 0x000000);
-  bbox.update();
-  //stl.add(bbox);
-  //object.add(stl);
+    var bbox = new THREE.BoundingBoxHelper(slicegroup, 0x000000);
+    bbox.update();
+    //stl.add(bbox);
+    //object.add(stl);
 
-  // Calculate position
-  console.log( ' Min: ', bbox.box.min);
-  console.log( ' Max: ', bbox.box.max);
+    // Calculate position
+    console.log(' Min: ', bbox.box.min);
+    console.log(' Max: ', bbox.box.max);
 
-  slicegroup.position.z = 0;
-  slicegroup.translateX( - bbox.box.min.x);
-  slicegroup.translateY( - bbox.box.min.y);
-  slicegroup.translateX(- laserxmax / 2)
-  slicegroup.translateY(- laserymax / 2)
+    slicegroup.position.z = 0;
+    slicegroup.translateX(-bbox.box.min.x);
+    slicegroup.translateY(-bbox.box.min.y);
+    slicegroup.translateX(-laserxmax / 2)
+    slicegroup.translateY(-laserymax / 2)
 
-  scene.add( slicegroup );
-  fileParentGroup = slicegroup;
-  fileobject = slicegroup;
-  viewExtents(slicegroup);
+    scene.add(slicegroup);
+    fileParentGroup = slicegroup;
+    fileobject = slicegroup;
+    viewExtents(slicegroup);
 }
 
 function allSlice(maxheight, step) {
-  NProgress.set(0.2);
-  group  = new THREE.Group();
-  for(var i = 0; i < maxheight; i+= step) {
-   (function(i) {
-     drawSlice(i);
-     var progress = (i / maxheight);
-     NProgress.set(progress);
-   })(i);
-  }
-  scene.add(group);
-  NProgress.done();
-  NProgress.remove();
+    NProgress.set(0.2);
+    group = new THREE.Group();
+    for (var i = 0; i < maxheight; i += step) {
+        (function(i) {
+            drawSlice(i);
+            var progress = (i / maxheight);
+            NProgress.set(progress);
+        })(i);
+    }
+    scene.add(group);
+    NProgress.done();
+    NProgress.remove();
 
-  var bbox = new THREE.BoundingBoxHelper(group, 0x000000);
-  bbox.update();
-  //stl.add(bbox);
-  //object.add(stl);
+    var bbox = new THREE.BoundingBoxHelper(group, 0x000000);
+    bbox.update();
+    //stl.add(bbox);
+    //object.add(stl);
 
-  // Calculate position
-  console.log( ' Min: ', bbox.box.min);
-  console.log( ' Max: ', bbox.box.max);
+    // Calculate position
+    console.log(' Min: ', bbox.box.min);
+    console.log(' Max: ', bbox.box.max);
 
-  group.position.z = 0;
-  group.translateX( - bbox.box.min.x);
-  group.translateY( - bbox.box.min.y);
-  group.translateX(- laserxmax / 2)
-  group.translateY(- laserymax / 2)
+    group.position.z = 0;
+    group.translateX(-bbox.box.min.x);
+    group.translateY(-bbox.box.min.y);
+    group.translateX(-laserxmax / 2)
+    group.translateY(-laserymax / 2)
 }
 
 function drawSlice(zheight) {
@@ -197,13 +198,19 @@ function drawSlice(zheight) {
             for (y = 0, yl = shape.holes.length; y < yl; y++) {
                 hole = new THREE.Shape(shape.holes[y].getPoints());
                 hole.autoClose = true;
-                group.add(new THREE.Line(new THREE.ShapeGeometry(hole), new THREE.LineBasicMaterial( { color: 0x0000ff, opacity: 1.0 } ) ) );
+                group.add(new THREE.Line(new THREE.ShapeGeometry(hole), new THREE.LineBasicMaterial({
+                    color: 0x0000ff,
+                    opacity: 1.0
+                })));
             }
         }
 
         shape.holes = [];
         shape.autoClose = true;
-        group.add(new THREE.Line(new THREE.ShapeGeometry(shape), new THREE.LineBasicMaterial( { color: 0x0000ff, opacity: 1.0 } )));
+        group.add(new THREE.Line(new THREE.ShapeGeometry(shape), new THREE.LineBasicMaterial({
+            color: 0x0000ff,
+            opacity: 1.0
+        })));
     }
 
     //group.position.z = 0;
