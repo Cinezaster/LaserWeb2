@@ -4,7 +4,8 @@
   "description": "Yup, its time to start working on its successor already!",
   "main": "index.html",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "dev": "node_modules/.bin/browser-sync start --server \"./\""
   },
   "repository": {
     "type": "git",
