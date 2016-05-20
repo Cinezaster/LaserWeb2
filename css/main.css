@@ -1,3 +1,135 @@
+body {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.fa-stack{
+    width: 1.28571em;
+}
+
+.icon-white {
+    color: white;
+}
+.icon-bot-text { margin-top: 1.3em; font-size: 10px;}
+.icon-top-text { margin-top: -1.3em; font-size: 10px; }
+
+.btn-ctl {
+    padding: 15px 12px;
+    border-radius: 4px;
+}
+
+.btn-jog {
+    padding: 15px 11px;
+    border-radius: 4px;
+}
+
+.btn-numpad {
+    padding: 14px 17px;
+    border-radius: 4px;
+}
+
+.numero {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.del  {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.clear {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.neg {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.cancel {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.done {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.sep {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+
+
+/*for Desktops*/
+@media all and (min-width : 1100px) {
+  #container1 {
+      float:left;
+      width:100%;
+      height: 100%;
+      padding: 0px;
+  }
+  #col1 {
+      border-right: dashed 1px #aaa;
+      float:left;
+      width:20%;
+      height: 100%;
+      padding: 10px 5px 5px 0px;
+      overflow-y: auto;
+      overflow-x: none;
+      overflow-x: hidden;
+  }
+  #col2 {
+      float:left;
+      width:60%;
+      height: calc(100% - 80px);
+      padding: 10px;
+  }
+  #col3 {
+      border-left: dashed 1px #aaa;
+      float:left;
+      width:20%;
+      height: 100%;
+      padding: 5px;
+  }
+}
+
+/*for small screens (pi hdmi, pipox9 etc)*/
+@media not all and (min-width : 1100px) {
+  #container1 {
+      float:left;
+      width:100%;
+      height: 100%;
+      padding: 5px;
+  }
+  #col1 {
+      float:left;
+      width:26%;
+      height: 100%;
+      padding: 10px 5px 5px 0px;
+      overflow-y: auto;
+      overflow-x: none;
+      overflow-x: hidden;
+  }
+  #col2 {
+      float:left;
+      width:50%;
+      height: calc(100% - 80px);
+      padding: 10px;
+  }
+  #col3 {
+      float:left;
+      width:24%;
+      height: 100%;
+      padding: 5px;
+  }
+}
+
 #renderArea {
     /*background-color: #ffffff;*/
     /*position: relative;
@@ -10,12 +142,12 @@
     margin-right: 1%;
     z-index: -3;*/
     display:inline-block;
+    min-width: 100% !important;
 	  min-height: 100% !important;
     cursor: none;
+    border-bottom: dashed 1px #aaa;
 }
 
-
-}
 #rasterArea {
     background-color: #ffffff;
     position: absolute;
@@ -27,12 +159,12 @@
     float: left;
     margin-right: 1%;
 }
-#mobileRenderArea {
+/*#mobileRenderArea {
     float: none;
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 0px;
-}
+}*/
 .btn-file {
     position: relative;
     overflow: hidden;
@@ -53,17 +185,6 @@
     display: block;
 }
 
-/* tab color */
-
-.nav-tabs>li>a {
-    color: #222;
-}
-
-/* active tab color */
-
-.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
-    color: #000;
-}
 .dro {
     background-color: #ffffff;
     text-align: left;
@@ -77,19 +198,22 @@
     margin-right: 5px;
 }
 #console {
-    height: 220px;
-    width: auto;
+    height: calc(100% - 210px);
+    width: 100%;
     overflow-y: auto;
     overflow-x: none;
     text-align: left;
     background-color: #fff;
-    padding: 10px;
+    padding: 5px;
     font-size: 10px;
-    word-break: break-all;
+    /*word-break: break-all;*/
     white-space:normal;
+    border-top: dashed 1px #aaa;
+    border-bottom: dashed 1px #aaa;
+    margin-top: 5px;
 }
 .pf {
-    white-space: pre;
+    /*white-space: pre;*/
 }
 .ui-slider {
     background: #ccc;
@@ -97,7 +221,7 @@
 
  .ui-slider-handle {
    -ms-touch-action: none;
-   touch-action: none;
+touch-action: none;
  }
 
 .settingstable {
@@ -116,19 +240,25 @@
 
 .badge-notify {
     background-color: #cc0000;
-    /*position:relative;
-   top: -6px;
-   left: -30px;*/
+    position:relative;
+   bottom: 5px;
+   right: 0px;
 }
-@media only screen and (min-width : 768px) {
-   .flex-row.row {
-	 display: flex;
-	 flex-wrap: wrap;
-   align-items: stretch;
-   }
-   .flex-row.row > [class*='col-'] {
-	 display: flex;
-	 flex-direction: column;
-   align-items: stretch;
-   }
-}
+
+d-grid {border: none; padding: 20px;}
+			.nmpd-grid>tbody>tr>td {border: none;}
+
+			/* Some custom styling for Bootstrap */
+			.qtyInput {display: block;
+			  width: 100%;
+			  padding: 6px 12px;
+			  color: #555;
+			  background-color: white;
+			  border: 1px solid #ccc;
+			  border-radius: 4px;
+			  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+			  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+			  -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+			  -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+			  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+			}

@@ -6,6 +6,8 @@ var warncolor = '#ff6600';
 
 var debug = false;
 
+var useNumPad;
+
 // Place all document.ready tasks into functions and ONLY run the functions from doument.ready
 $(document).ready(function() {
 
@@ -22,7 +24,9 @@ $(document).ready(function() {
     var paperscript = {};
     rasterInit();
     macrosInit();
+    svgInit();
     grbl = new Grbl();
+
     //initRaster();
 
     // Responsive Sidebar width
@@ -101,30 +105,16 @@ $(document).ready(function() {
     // Tabs on right side
     $('#drotabtn').on('click', function() {
       $('#drotab').show();
-      $('#jogtab').hide();
       $('#gcodetab').hide();
       $("#drotabtn").addClass("active");
-      $("#jogtabbtn").removeClass("active");
-      $("#gcodetabbtn").removeClass("active");
-    });
-
-
-    $('#jogtabbtn').on('click', function() {
-      $('#drotab').hide();
-      $('#jogtab').show();
-      $('#gcodetab').hide();
-      $("#drotabtn").removeClass("active");
-      $("#jogtabbtn").addClass("active");
       $("#gcodetabbtn").removeClass("active");
     });
 
 
     $('#gcodetabbtn').on('click', function() {
       $('#drotab').hide();
-      $('#jogtab').hide();
       $('#gcodetab').show();
       $("#drotabtn").removeClass("active");
-      $("#jogtabbtn").removeClass("active");
       $("#gcodetabbtn").addClass("active");
     });
 
@@ -133,11 +123,13 @@ $(document).ready(function() {
     $('#togglemacro').on('click', function() {
       if ($( "#togglemacro" ).hasClass( "btn-primary" )) {
         $('#macro_container').hide();
+        $('#renderArea').show();
         $('#viewer_container').show();
         $("#togglemacro").removeClass("btn-primary");
         $("#togglemacro").addClass("btn-default");
       } else {
         $('#macro_container').show();
+        $('#renderArea').hide();
         $('#viewer_container').hide();
         $("#togglemacro").addClass("btn-primary");
         $("#togglemacro").removeClass("btn-default");
@@ -150,6 +142,7 @@ $(document).ready(function() {
       if ($( "#toggleviewer" ).hasClass( "active" )) {
 
       } else {
+        $('#hometab').show();
         $('#camleftcol').hide();
         $('#settingscol').hide();
         $("#toggleviewer").addClass("active");
@@ -162,6 +155,7 @@ $(document).ready(function() {
       if ($( "#togglefile" ).hasClass( "active" )) {
 
       } else {
+        $('#hometab').hide();
         $('#camleftcol').show();
         $('#settingscol').hide();
         $("#toggleviewer").removeClass("active");
@@ -174,6 +168,7 @@ $(document).ready(function() {
       if ($( "#togglesettings" ).hasClass( "active" )) {
 
       } else {
+        $('#hometab').hide();
         $('#camleftcol').hide();
         $('#settingscol').show();
         $("#toggleviewer").removeClass("active");
@@ -193,10 +188,47 @@ $(document).ready(function() {
         showSpinner: false
     });
 
+checkNumPad();
+
 
 });
 // End of document.ready
 
+function checkNumPad() {
+
+  useNumPad = $('#useNumPad').val()
+  if (useNumPad.indexOf('Enable') == 0) {
+        $.fn.numpad.defaults.gridTpl = '<table class="table modal-content"></table>';
+        $.fn.numpad.defaults.backgroundTpl = '<div class="modal-backdrop in"></div>';
+        $.fn.numpad.defaults.displayTpl = '<input type="text" class="form-control" />';
+        $.fn.numpad.defaults.dblCellTpl = '<td colspan="2"></td>',
+        $.fn.numpad.defaults.buttonNumberTpl =  '<button type="button" class="btn btn-numpad btn-default" style="width: 100%;"></button>';
+        $.fn.numpad.defaults.buttonFunctionTpl = '<button type="button" class="btn  btn-numpad" style="width: 100%;"></button>';
+        //$.fn.numpad.defaults.onKeypadCreate = function(){$(this).find('.done').addClass('btn-primary');};
+        $('.numpad').numpad({
+        					decimalSeparator: '.',
+                  gcode: false,
+                  textDone: 'OK',
+              		textDelete: 'Del',
+              		textClear: 'Clear',
+              		textCancel: 'Cancel',
+                  headerText: 'Enter Number',
+        				});
+
+        $('.numpadgcode').numpad({
+                  decimalSeparator: '.',
+                  gcode: true,
+                  textDone: 'OK',
+              		textDelete: 'Del',
+              		textClear: 'Clear',
+              		textCancel: 'Cancel',
+                  headerText: 'Enter GCODE',
+                });
+
+
+  }
+
+}
 
 // From here down we can have the actual functions
 
@@ -206,7 +238,7 @@ errorHandlerJS = function() {
         message = message.replace(/^Uncaught /i, "");
         //alert(message+"\n\n("+url+" line "+line+")");
         console.log(message + "\n\n(" + url + " line " + line + ")");
-        if (message.indexOf('updateMatrixWorld') == -1) { // Ignoring threejs messages, add more || as discovered
+        if (message.indexOf('updateMatrixWorld') == -1 ) { // Ignoring threejs/google api messages, add more || as discovered
             printLog(message + "\n(" + url + " on line " + line + ")", errorcolor);
         }
 
@@ -230,7 +262,9 @@ function readFile(evt) {
             r.readAsText(evt.target.files[0]);
             r.onload = function(e) {
                 dxf = r.result
-                $('#camleftcol').show();
+                $('#togglefile').click();
+                $('#cammodule').show();
+                // $('#svgnewway').hide();
                 $('#rastermodule').hide();
                 getSettings();
                 drawDXF(dxf);
@@ -250,11 +284,25 @@ function readFile(evt) {
             r.readAsText(evt.target.files[0]);
             r.onload = function(event) {
                 svg = r.result
+                var svgpreview = document.getElementById('svgpreview');
+                svgpreview.innerHTML = r.result;
                     // /console.log(svg);
-                $('#camleftcol').show();
+                $('#togglefile').click();
+                $('#cammodule').show();
+                // $('#svgnewway').show();
                 $('#rastermodule').hide();
                 getSettings();
-                drawSvg(svg);
+                var svgfile = $('#svgpreview').html();
+                // var colors = pullcolors(svgfile).unique();
+                // var layers = []
+                // for (i = 0; i < colors.length; i++) {
+                //   // var r = colors[i][0];
+                //   // var g = colors[i][1];
+                //   // var b = colors[i][2];
+                //   //var colorval = RGBToHex(r, g, b)
+                //   layers.push(colors[i]);
+                // };
+                svg2three(svgfile);
                 currentWorld();
                 printLog('SVG Opened', successcolor);
                 $('#cammodule').show();
@@ -274,7 +322,8 @@ function readFile(evt) {
                 document.getElementById('gcodepreview').value = this.result;
                 openGCodeFromText();
                 printLog('GCODE Opened', successcolor);
-                $('#camleftcol').hide();
+                $('#toggleviewer').click();
+                $('#cammodule').hide();
                 $('#rastermodule').hide();
                 //  putFileObjectAtZero();
                 resetView()
@@ -326,8 +375,9 @@ function readFile(evt) {
             r.readAsArrayBuffer(evt.target.files[0]);
             printLog('STL Opened', successcolor);
             //$('#cammodule').hide();
+            $('#cammodule').show();
             $('#rastermodule').hide();
-            $('#camleftcol').show();
+            $('#togglefile').click();
             $('#stlopt').show();
             $('#prepopt').hide();
             $('#stlopt').click();
@@ -345,7 +395,7 @@ function readFile(evt) {
                 $('#cammodule').hide();
                 $('#rastermodule').show();
                 // putFileObjectAtZero();
-
+                $('#togglefile').click();
                 $('#stlopt').hide();
                 $('#prepopt').hide();
                 $("#transformcontrols").hide();

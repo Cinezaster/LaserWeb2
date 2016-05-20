@@ -1,26 +1,29 @@
 
-# LaserWeb2
-Yup, its time to start working on its successor already!
+# LaserWeb v2
 
-This repo will not be production ready anytime soon.
 
-Laserweb (https://github.com/openhardwarecoza/LaserWeb) was born out of a need! Last year when I gave up on getting a certain well known open source java based laser cutting software to work and my skills at the time didnt allow me to complete my development inside Chilipeppr - i caved in and did what I could to help myself get going! The result of which astounds even me! In just over three months LaserWeb grew to be a massively successful opensource project!  But its not without its flaws
+##Sponsors
 
-Thus today I give birth to the LaserWeb2 project!
+So how can I help?
 
-The idea is that this time round instead of a mess of code dumped together working through pure magic, LaserWeb2 will actually have an architecture!
+*Easy! Pick a contributor, and show them you care! *
 
-Eventually then LaserWeb can become a dev version to test out the craziness and the stable features can be brought into LaserWeb2
+If you sell laser machines / parts / electronics / anything remotely related - I am happy to say we'll gladly take your bribe in exchange for sticking your logo on our SPONSORS page and linking to your stores! We'll probably even hook up the hardware you donate and figure out how it works and add that info/specifics/settings to this Wiki! If you have any business common sense, you can see that it is a pretty good ROI out of your marketing budget (;
 
-Let the Dev begin!
 
-(Note readme / wiki here will stay very quiet!   If you are a user, head over to https://github.com/openhardwarecoza/LaserWeb  - if you are a developer, talk to @openhardwarecoza or view the commit log!)
 
-## Sponsors
-Have a look at companies and individuals that support us financially or with parts donations, or if you would like to get involved by sponsoring us in any way, please see the Sponsors Page on the wiki: https://github.com/openhardwarecoza/LaserWeb/wiki/SPONSORS
+#Usage Instructions:
 
+1. Go to [http://openhardwarecoza.github.io/LaserWeb2/](http://openhardwarecoza.github.io/LaserWeb2/)
+2. Install Serial Port JSON Server https://github.com/chilipeppr/serial-port-json-server/releases
+3. Click the Settings tab in LaserWeb2's web interface and configure for your machine, IP of SPJS, GCODE dialect, etc
+4. Connect and PLAY
+
+ 
 ## Disclaimer
 By using this software, the user accepts complete responsibility for each and every aspect of safety associated with the use of the Laser machine, Laser system and LaserWeb2 Software.
+
+
 
 ####You agree that:
 
@@ -30,11 +33,14 @@ By using this software, the user accepts complete responsibility for each and ev
 4. You will use the LaserWeb2 software in a legal and safe manner.
 5. You relieve the author and contributors from any liability arising from the use or distribution of the LaserWeb2 software.
 6. You are entirely operating at your own risk. Lasers can be lethally dangerous. 
+ 
 
 
-#Testing
+#Support / Community:
+* For End User support (Usage, setup etc) please join [https://plus.google.com/communities/115879488566665599508](https://plus.google.com/communities/115879488566665599508)
+* For Development Support (Bugs, feature requests, API, etc) see 
+[https://github.com/openhardwarecoza/LaserWeb2/issues](https://github.com/openhardwarecoza/LaserWeb2/issues)
 
-You can test drive it live from [http://openhardwarecoza.github.io/LaserWeb2/](http://openhardwarecoza.github.io/LaserWeb2/)
 
 ## Internal module development
 It would be more maintainable if we could develop more functional modules, that are tested.
@@ -45,3 +51,19 @@ It would be more maintainable if we could develop more functional modules, that 
 npm install // installs mocha and chai
 npm test // runs test code on grbl.js
 ```
+
+#Roadmap
+
+As of middle May 2016:
+
+![Roadmap](https://raw.githubusercontent.com/openhardwarecoza/LaserWeb2/gh-pages/Roadmap-%20LaserWeb2.png)
+
+##History
+
+Laserweb (https://github.com/openhardwarecoza/LaserWeb) was born out of a need! Last year when I gave up on getting a certain well known open source java based laser cutting software to work and my skills at the time didnt allow me to complete my development inside Chilipeppr - i caved in and did what I could to help myself get going! The result of which astounds even me! In just over three months LaserWeb grew to be a massively successful opensource project!  But its not without its flaws...
+
+Thus, this here is it's successor: LaserWeb2!
+
+Want to get involved? Simple - we have a couple of Contributors on the project, who have devoted time and effort into making LaserWeb better than it was before they joined. Many of these contributors do it for nothing more than the passion of working on an open source project, and some don't even own a laser.
+
+Through the wonder that is the global open source community, however, lack of a laser hasn't stopped them! If you follow our team on Google Plus you'll know that we sometimes go as far as having three or four people in different time zones, collaborating on code, while having someone else in the team test it out on real hardware. It has not been easy, but we won't let that stop us!

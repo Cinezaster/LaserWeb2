@@ -97,8 +97,8 @@ function generateSlices() {
 }
 
 function slicegrid(step) {
-    var numx = Math.floor(laserxmax / stlxsize);
-    var numy = Math.floor(laserymax / stlysize);
+    var numx = Math.floor(laserxmax / (stlxsize + 3));
+    var numy = Math.floor(laserymax / (stlysize + 3));
     var numlayers = Math.floor(stlzsize / parseFloat($('#layerheight').val()))
     console.log('Will be able to fit ', numx, ' on X, and ', numy, 'on Y. ', 'We will need space for ', numlayers)
 
@@ -127,8 +127,8 @@ function slicegrid(step) {
             })(i);
             i++
             //}
-            group.translateX(stlxsize * row);
-            group.translateY(stlysize * col);
+            group.translateX(((stlxsize + 3) * row));
+            group.translateY(((stlysize + 3) * col));
             slicegroup.add(group);
         }
     }

@@ -4,12 +4,13 @@ function initLocalStorage() {
 }
 
 
-localParams = ['spjsip', 'laserXMax', 'laserYMax', 'startgcode', 'laseron', 'laseroff', 'lasermultiply', 'homingseq', 'endgcode', 'useOffset', 'imagePosition'];
+localParams = ['spjsip', 'laserXMax', 'laserYMax', 'startgcode', 'laseron', 'laseroff', 'lasermultiply', 'homingseq', 'endgcode', 'useOffset', 'imagePosition', 'useNumPad', 'useVideo', 'useProfile'];
 
 function saveSettingsLocal() {
     for (i = 0; i < localParams.length; i++) {
         var val = $('#' + localParams[i]).val(); // Read the value from form
         console.log('Saving: ', localParams[i], ' : ', val);
+        printLog('Saving: ' + localParams[i] + ' : ' + val, successcolor);
         localStorage.setItem(localParams[i], val);
     };
 };

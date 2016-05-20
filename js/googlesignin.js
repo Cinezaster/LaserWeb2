@@ -2,18 +2,25 @@ var googleUser = {};
 
 var startApp = function() {
     console.log('Starting GSingIn')
+    if (typeof(gapi) !== "undefined")  {
+      gapi.load('auth2', function(){
+        // Retrieve the singleton for the GoogleAuth library and set up the client.
+        auth2 = gapi.auth2.init({
+          client_id: '1086441811451-4nmidqbqq8tve1qqa592uq1hs04kl5sl.apps.googleusercontent.com',
+          cookiepolicy: 'single_host_origin',
+          // Request scopes in addition to 'profile' and 'email'
+          scope: 'https://www.googleapis.com/auth/drive'
+        });
 
-    gapi.load('auth2', function(){
-      // Retrieve the singleton for the GoogleAuth library and set up the client.
-      auth2 = gapi.auth2.init({
-        client_id: '1086441811451-4nmidqbqq8tve1qqa592uq1hs04kl5sl.apps.googleusercontent.com',
-        cookiepolicy: 'single_host_origin',
-        // Request scopes in addition to 'profile' and 'email'
-        scope: 'https://www.googleapis.com/auth/drive'
+        attachSignin(document.getElementById('g-login'));
+        printLog('Enabled Google Drive integration', successcolor);
+
       });
+    } else {
+      printLog('Could not enable Google Drive Integration: Does this device have working internet access?', warncolor);
+      $('#g-login').addClass('disabled');
+    }
 
-      attachSignin(document.getElementById('g-login'));
-    });
 };
 
 function attachSignin(element) {
@@ -23,7 +30,7 @@ function attachSignin(element) {
           $('#g-login').hide();
           $('#g-logout').show();
           $('#g-refresh').show();
-          $('#fullname').html( 'Logged in as: <b>' + googleUser.getBasicProfile().getName() + '</b>');
+          $('#fullname').html( 'Logged in as:<br> <b>' + googleUser.getBasicProfile().getName() + '</b>');
           $("#userpic").attr("src", googleUser.getBasicProfile().getImageUrl());
           gapi.client.load('drive', 'v3', function(){
              console.log('Drive Loaded');
@@ -67,7 +74,7 @@ function listFiles() {
          var file = files[i];
          if (file.name.match(/.dxf$/i) || file.name.match(/.svg$/i) ) {
            var idstring = String(file.id)
-           $('#fileList').append("<i class='fa fa-fw fa-file-o' aria-hidden='true'></i><a href='#' onclick='getFileContent(\""+file.id+"\")'>"+file.name+"</a><br/>");
+           $('#fileList').append("<i class='fa fa-fw fa-file-o' aria-hidden='true'></i><a href='#' onclick='getFileContent(\""+file.id+"\",\""+file.name+"\")'>"+file.name+"</a><br/>");
            $('#fileList').scrollTop($("#console")[0].scrollHeight - $("#console").height());
          }
 
@@ -89,7 +96,7 @@ function listFiles() {
 
 
 
-function getFileContent(fileId) {
+function getFileContent(fileId, fileName) {
   console.log('fetching ', fileId)
   gapi.client.request({
   'path': '/drive/v2/files/'+fileId,
@@ -109,9 +116,14 @@ function getFileContent(fileId) {
                   $('#cammodule').show();
                   $('#rastermodule').hide();
                   getSettings();
-                  drawDXF(myXHR.response);
+                  if (fileName.match(/.dxf$/i)) {
+                    drawDXF(myXHR.response);
+                    printLog('Google Drive DXF File Opened', successcolor);
+                  } else if (fileName.match(/.svg$/i)) {
+                    drawSVG(myXHR.response);
+                    printLog('Google Drive SVG File Opened', successcolor);
+                  }
                   currentWorld();
-                  printLog('Google Drive File Opened', successcolor);
                   $('#cammodule').show();
                   putFileObjectAtZero();
                   resetView()

@@ -1,3 +1,5 @@
+// NOTE:  Unused since 0 May 2016 - replaced with SVGReader
+
 var options = {};
 var shape = null;
 var fileParentGroup;
@@ -35,7 +37,7 @@ drawSvg = function(file) {
         $("#layers").empty();
 
         viewExtents(fileParentGroup)
-        $('#layers').append('<form class="form-horizontal"><div class="form-group"><label class="control-label">SVG</label><div class="input-group"><input class="form-control" name=sp0 id=sp0 value=3200><span class="input-group-addon">mm/m</span></div><div class="form-group"></div><div class="input-group"><input class="form-control" name=pwr0 id=pwr0 value=100><span class="input-group-addon">%</span></div></div></form>');
+        $('#layers').append('<form class="form-horizontal"><label class="control-label">SVG</label><div class="input-group"><input class="form-control numpad" name=sp0 id=sp0 value=3200><span class="input-group-addon">mm/m</span></div><div class="input-group"><input class="form-control numpad" name=pwr0 id=pwr0 value=100><span class="input-group-addon">%</span></div></form>');
 
         //scene.add(  this.mySceneGroup)
         // get the new 3d viewer object centered on camera
@@ -47,6 +49,7 @@ drawSvg = function(file) {
 
         //this.generateGcode();
     }
+    checkNumPad(); // Make newly added rows also numpad if configured
 };
 extractSvgPathsFromSVGFile = function(file) {
 
@@ -63,7 +66,7 @@ extractSvgPathsFromSVGFile = function(file) {
         var pathSet = fragment.selectAll("path");
         if (pathSet == null) {
 
-            printLog('Error Parsing SVG!', errorcolor)
+            printLog('Error Parsing SVG! No Paths Found', errorcolor)
             return true;
 
         } else {
@@ -93,17 +96,20 @@ extractSvgPathsFromSVGFile = function(file) {
 
     console.log('Path Set: ', pathSet)
 
-    pathSet.forEach(function(path, i) {
+    // pathSet.forEach(function(path, i) {
 
+    for (i = 0; i < pathSet.length; i++) {
+
+        var path = pathSet[i];
         //if (i > 4) return;
         console.log('Doing Path: ', path)
 
         // handle transforms
         //var path = p1.transform(path.matrix);
-
-        //printLog("working on path:" + path, successcolor);
-        //printLog("length:" + path.getTotalLength(), successcolor);
-        //("path.parent:", path.parent());
+        //
+        // printLog("working on path:" + path, successcolor);
+        // printLog("length:" + path.getTotalLength(), successcolor);
+        // printLog("path.parent:" + path.parent(), successcolor);
 
         // if the parent path is a clipPath, then toss it
         if (path.parent().type.match(/clippath/i)) {
@@ -114,18 +120,19 @@ extractSvgPathsFromSVGFile = function(file) {
         // use Snap.svg to translate path to a global set of coordinates
         // so the xy values we get are in global values, not local
         // see if there is a parent transform
-        //printLog("path.transform:" + path.transform(), successcolor);
-        console.log("path.transform:" + path.transform());
 
-        path = path.transform(path.transform().global);
-        console.log("Transformed Path: ", path)
-        if (path.parent().type == "g") {
+        if (path.parent().type == "g" || path.parent().type == "M" ) {
             console.log("there is a parent. see if transform. path.parent().transform()", path);
             path = path.transform(path.parent().transform().global);
+            path = path.transform(path.transform().global);
+        } else {
+          path = path.transform(path.transform().global);
+          console.log("Transformed Path: ", path)
         }
 
+
         var material = new THREE.LineBasicMaterial({
-            color: 0x333333
+            color: 0x0000ff
         });
 
 
@@ -138,12 +145,13 @@ extractSvgPathsFromSVGFile = function(file) {
             //for (var pathindex in paths) {
             //printLog('Number of Paths ' + paths.length, successcolor)
         for (pathindex = 0; pathindex < paths.length; pathindex++) {
+            console.log('Path Index: ', pathindex, '/', paths.length);
 
             var shape = paths[pathindex];
 
             shape.autoClose = true;
             console.log("shape: Number", pathindex, "Value: ", shape);
-
+0
             // solid line
             if (shape.curves.length != 0) {
                 //printLog('Generating Shape' + shape, successcolor)
@@ -166,8 +174,8 @@ extractSvgPathsFromSVGFile = function(file) {
 
 
         }
+      };
 
-    });
 
     // since svg has top left as 0,0 we need to flip
     // the whole thing on the x axis to get 0,0
@@ -272,7 +280,8 @@ transformSVGPath = function(pathStr) {
         else
             sidx = idx;
         // eat number
-        while (idx < len) {
+        while (idx <= len) {
+
             c = pathStr.charCodeAt(idx);
             if (DIGIT_0 <= c && c <= DIGIT_9) {
                 idx++;

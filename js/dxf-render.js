@@ -83,7 +83,7 @@ function drawDXF(file) {
     layers = row.unique();
     //console.log(layers);
     for (var c = 0; c < layers.length; c++) {
-        $('#layers').append('<form class="form-horizontal"><div class="form-group"><label class="control-label">'+ layers[c] +'</label><div class="input-group"><input class="form-control" name=sp' + c + ' id=sp' + c + ' value=3200><span class="input-group-addon">mm/m</span></div><div class="form-group"></div><div class="input-group"><input class="form-control" name=pwr' + c + ' id=pwr' + c + ' value=100><span class="input-group-addon">%</span></div></div></form>');
+        $('#layers').append('<form class="form-horizontal"><label class="control-label">'+ layers[c] +'</label><div class="input-group"><input class="form-control numpad" name=sp' + c + ' id=sp' + c + ' value=3200><span class="input-group-addon">mm/m</span></div><div class="input-group"><input class="form-control numpad" name=pwr' + c + ' id=pwr' + c + ' value=100><span class="input-group-addon">%</span></div></form>');
 
 
     }
@@ -96,7 +96,7 @@ function drawDXF(file) {
     // $('#cutParams').modal('toggle');
     // document.getElementById('fileName').value = fileName;
     viewExtents(fileParentGroup);
-
+    checkNumPad(); // Make newly added rows also numpad if configured
     // clear SVG Invert + Move values if present
     svgxpos = 0;
     svgypos = 0;

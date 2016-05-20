@@ -12,14 +12,60 @@ var marker;
 var laserxmax;
 var laserymax;
 var lineincrement = 50
+var camvideo;
+var video, videoImage, videoImageContext, videoTexture, useVideo;
 
 containerWidth = window.innerWidth;
 containerHeight = window.innerHeight;
+
+var camvideo = document.getElementById('monitor');
+
+
+function initWebcam() {
+
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+  window.URL = window.URL || window.webkitURL;
+
+  var camvideo = document.getElementById('monitor');
+
+  	if (!navigator.getUserMedia)
+  	{
+  		printLog('Sorry. WebRTC is not available.', errorcolor);
+  	} else {
+  		navigator.getUserMedia({video: true}, gotStream, noStream);
+  	}
+}
+
+function gotStream(stream)
+{
+  if (window.URL)
+  {
+    var camvideo = document.getElementById('monitor');
+    camvideo.src = window.URL.createObjectURL(stream);   }
+  else // Opera
+  {
+    var camvideo = document.getElementById('monitor');
+    camvideo.src = stream;   }
+  camvideo.onerror = function(e)
+  {   stream.stop();   };
+  stream.onended = noStream;
+}
+function noStream(e)
+{
+  var msg = 'No camera available.';
+  if (e.code == 1)
+  {   msg = 'User denied access to use camera.';   }
+  printLog(msg, errorcolor)
+}
+
+
 
 function init3D() {
 
     window.addEventListener('mousedown', onMouseClick, false);
     window.addEventListener('mousemove', onMouseMove, false);
+
 
     // ThreeJS Render/Control/Camera
     scene = new THREE.Scene();
@@ -71,42 +117,53 @@ function init3D() {
 
     if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
         console.log('Running on iOS');
-        $('#viewermodule').show();
-        $('#mobileRenderArea').append(renderer.domElement);
-        renderer.setClearColor(0xffffff, 1); // Background color of viewer
-        renderer.setSize(1000, 1000);
-        renderer.clear();
-        camera.aspect = $('#mobileRenderArea').width() / $('#mobileRenderArea').height();
-        camera.updateProjectionMatrix();
+        // $('#viewermodule').show();
+        // $('#mobileRenderArea').append(renderer.domElement);
+        // renderer.setClearColor(0xffffff, 1); // Background color of viewer
+        // renderer.setSize(1000, 1000);
+        // renderer.clear();
+        // camera.aspect = $('#mobileRenderArea').width() / $('#mobileRenderArea').height();
+        // camera.updateProjectionMatrix();
 
     } else if (userAgent.match(/Android/i)) {
         console.log('Running on Android');
-        $('#viewermodule').show();
-        $('#mobileRenderArea').append(renderer.domElement);
-        renderer.setClearColor(0xffffff, 1); // Background color of viewer
-        renderer.setSize($('#mobileRenderArea').width(), $('#mobileRenderArea').height());
-        renderer.clear();
-        camera.aspect = $('#mobileRenderArea').width() / $('#mobileRenderArea').height();
-        camera.updateProjectionMatrix();
+        // $('#viewermodule').show();
+        // $('#mobileRenderArea').append(renderer.domElement);
+        // renderer.setClearColor(0xffffff, 1); // Background color of viewer
+        // renderer.setSize($('#mobileRenderArea').width(), $('#mobileRenderArea').height());
+        // renderer.clear();
+        // camera.aspect = $('#mobileRenderArea').width() / $('#mobileRenderArea').height();
+        // camera.updateProjectionMatrix();
 
     } else {
         console.log('Running on unknown/Desktop');
-        $('#viewermodule').hide();
-        $('#renderArea').append(renderer.domElement);
-        renderer.setClearColor(0xffffff, 1); // Background color of viewer = transparent
-        // renderer.setSize(window.innerWidth - 10, window.innerHeight - 10);
-        renderer.clear();
-
-        sceneWidth = document.getElementById("renderArea").offsetWidth,
-        sceneHeight = document.getElementById("renderArea").offsetHeight;
-        camera.aspect = sceneWidth / sceneHeight;
-        renderer.setSize(sceneWidth, sceneHeight)
-        camera.updateProjectionMatrix();
+        // $('#viewermodule').hide();
+        // $('#renderArea').append(renderer.domElement);
+        // renderer.setClearColor(0xffffff, 1); // Background color of viewer = transparent
+        // // renderer.setSize(window.innerWidth - 10, window.innerHeight - 10);
+        // renderer.clear();
+        //
+        // sceneWidth = document.getElementById("renderArea").offsetWidth,
+        // sceneHeight = document.getElementById("renderArea").offsetHeight;
+        // camera.aspect = sceneWidth / sceneHeight;
+        // renderer.setSize(sceneWidth, sceneHeight)
+        // camera.updateProjectionMatrix();
         // controls.reset();
         // $('#viewReset').click();
 
     }
 
+    $('#viewermodule').hide();
+    $('#renderArea').append(renderer.domElement);
+    renderer.setClearColor(0xffffff, 1); // Background color of viewer = transparent
+    // renderer.setSize(window.innerWidth - 10, window.innerHeight - 10);
+    renderer.clear();
+
+    sceneWidth = document.getElementById("renderArea").offsetWidth,
+    sceneHeight = document.getElementById("renderArea").offsetHeight;
+    camera.aspect = sceneWidth / sceneHeight;
+    renderer.setSize(sceneWidth, sceneHeight)
+    camera.updateProjectionMatrix();
 
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -304,16 +361,48 @@ function init3D() {
     scene.add(axesgrp);
 
     // Picking stuff
-
     projector = new THREE.Projector();
     mouseVector = new THREE.Vector3();
 
 
+    // Webcam Texture
+    useVideo = $('#useVideo').val()
+    if (useVideo.indexOf('Enable') == 0) {
+      initWebcam();
+      video = document.getElementById( 'monitor' );
+
+    	videoImage = document.getElementById( 'videoImage' );
+    	videoImageContext = videoImage.getContext( '2d' );
+    	// background color if no video present
+    	videoImageContext.fillStyle = '#ffffff';
+    	videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );
+    	videoTexture = new THREE.Texture( videoImage );
+    	videoTexture.minFilter = THREE.LinearFilter;
+    	videoTexture.magFilter = THREE.LinearFilter;
+
+    	var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
+    	// the geometry on which the movie will be displayed;
+    	// 		movie image will be scaled to fit these dimensions.
+    	var movieGeometry = new THREE.PlaneGeometry( laserxmax, laserymax, 1, 1 );
+    	var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
+    	movieScreen.position.set(0,0,-0.2);
+    	scene.add(movieScreen);
+    }
+
+
 }
 
-
-
 function animate() {
+
+  //useVideo = $('#useVideo').val()
+  if (useVideo.indexOf('Enable') == 0) {
+      if ( video.readyState === video.HAVE_ENOUGH_DATA )
+    	{
+    		videoImageContext.drawImage( video, 0, 0, videoImage.width, videoImage.height );
+    		if ( videoTexture )
+    			videoTexture.needsUpdate = true;
+    	}
+    }
 
     requestAnimationFrame(animate);
 
@@ -534,7 +623,7 @@ function onMouseClick(e) {
     for (var i = 0; i < intersects.length; i++) {
         var intersection = intersects[i],
             obj = intersection.object;
-        if (obj.name && obj.name != "bullseye" && obj.name != "rastermesh") {
+        if (obj.name && obj.name != "bullseye" && obj.name != "rastermesh" && obj.name != "XY") {
             printLog('Clicked on : ' + obj.name, successcolor)
             obj.material.color.setRGB(Math.random(), Math.random(), Math.random());
         }

@@ -287,7 +287,7 @@ onWsMessage = function(msg) {
             onBroadcast(data);
         } else if (data && data.Cmd && data.Cmd == "FeedRateOverride") {
             // if spjs returns FeedRateOverride, publish onFeedRateOverride signal.
-            onFeedRateOverride(data);
+            //onFeedRateOverride(data);
         } else if (data && data.SerialPorts) {
             // we got a serial port list
             console.log("got serial port list");
